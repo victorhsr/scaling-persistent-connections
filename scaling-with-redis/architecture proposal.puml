@@ -1,0 +1,33 @@
+@startuml Foo system
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+!include DEVICONS/spring.puml
+!include DEVICONS/redis.puml
+
+SHOW_PERSON_PORTRAIT()
+LAYOUT_LEFT_RIGHT()
+HIDE_STEREOTYPE()
+
+title Container diagram for a 'real time' tracking service
+
+Person(p_worker, "Worker", "Uses their smartphone with the company's app to get their location tracked while work")
+Person(p_manager, "Manager", "Every manager has a team of workers, and they want to see their team movimentation in 'real time'")
+
+System_Boundary(foo_system, "Foo system"){
+
+    Boundary(b_tracking_boundary, "Tracking"){
+        Container(c_tracking_api_gateway, "Tracking API Gateway", "Kotlin/Spring","The entry point to the Tracking boundary, it will resolve the Tracking Service that will be handling the SSE connection, appling load balancing in this process", $sprite="spring")
+        Container(c_tracking_service, "Tracking Service", "Kotlin/Spring", "The service that will push the information about the location of the workers of a team", $sprite="spring")
+        ContainerDb(c_tracking_pub_sub_engine, "Tracking PUB / SUB", "Redis", "Act as a PUB / SUB engine that allow us to scale up the Tracking Service, distributing the incoming messages through all listener nodes", $sprite="redis")
+    }
+
+    Rel(c_tracking_api_gateway, c_tracking_service, "Redirects connections that wants to create a stream to read/write tracking data", "SSE")
+    Rel(c_tracking_service, c_tracking_pub_sub_engine, "Subscribes to get notified when new data tracking arrives in the system", "TRACKING_* channel")
+    Rel(c_tracking_service, c_tracking_pub_sub_engine, "Publishes tracking data when it reaches the system by the worker's connection", "TRACKING_{TEAM_NAME} channel")
+    Rel(c_tracking_pub_sub_engine, c_tracking_service, "Pushes tracking data to the subscribers", "TRACKING_{TEAM_NAME} channel")
+
+
+    Rel(p_worker, c_tracking_api_gateway, "Try to create a stream to write tracking data", "SSE")
+    Rel(p_manager, c_tracking_api_gateway, "Try to create a stream to read tracking data", "SSE")
+    Rel(c_tracking_service, c_tracking_service, "Pushes tracking data to the active manager's streams", "SSE")
+}
