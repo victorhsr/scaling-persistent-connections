@@ -1,5 +1,6 @@
-package io.github.victorhsr.tracking.core.track
+package io.github.victorhsr.tracking.core.tracking
 
+import io.github.victorhsr.tracking.core.TeamFlowKeeper
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -40,14 +41,17 @@ class TeamFlowKeeperTest {
         val team = "SOME_TEAM"
         val flow = teamFlowKeeper.getTeamFlow(team)!!
 
-        val subscriberJobOne = launch { flow.collect { println("Collecting track 1") } }
+        val subscriberJobOne = launch { flow.collect { println("Collecting tracking-data") } }
         delay(200)
+
+        val teamFlowWhenItStillHaveConsumers = teamFlowKeeper.getTeamFlow(team, false)
+        assertNotNull(teamFlowWhenItStillHaveConsumers)
 
         subscriberJobOne.cancelAndJoin()
         delay(200)
 
-        val teamFlow = teamFlowKeeper.getTeamFlow(team, false)
-        assertNull(teamFlow)
+        val teamFlowWithNoConsumers = teamFlowKeeper.getTeamFlow(team, false)
+        assertNull(teamFlowWithNoConsumers)
     }
 
     @Test
@@ -59,8 +63,8 @@ class TeamFlowKeeperTest {
             val team = "SOME_TEAM"
             val flow = teamFlowKeeper.getTeamFlow(team)!!
 
-            val subscriberJobOne = launch { flow.collect { println("Collecting track 1") } }
-            val subscriberJobTwo = launch { flow.collect { println("Collecting track 2") } }
+            val subscriberJobOne = launch { flow.collect { println("Collecting tracking-data 1") } }
+            val subscriberJobTwo = launch { flow.collect { println("Collecting tracking-data 2") } }
             delay(200)
 
             subscriberJobOne.cancelAndJoin()

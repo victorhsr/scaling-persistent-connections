@@ -1,4 +1,4 @@
-package io.github.victorhsr.tracking.core.track
+package io.github.victorhsr.tracking.core
 
 import io.github.victorhsr.tracking.core.commons.runWithLock
 import kotlinx.coroutines.CoroutineName
@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
 
 class TeamFlowKeeper {
 
-    private val teamToFlowMap = mutableMapOf<String, MutableSharedFlow<Track>>()
+    private val teamToFlowMap = mutableMapOf<String, MutableSharedFlow<TrackingData>>()
     private val lock = Mutex(false)
     private val scope = CoroutineScope(Dispatchers.IO + CoroutineName("flow-keeper"))
 
@@ -18,7 +18,7 @@ class TeamFlowKeeper {
         private val LOGGER = LoggerFactory.getLogger(TeamFlowKeeper::class.java)
     }
 
-    suspend fun getTeamFlow(team: String, createIfNotExist: Boolean = true): MutableSharedFlow<Track>? {
+    suspend fun getTeamFlow(team: String, createIfNotExist: Boolean = true): MutableSharedFlow<TrackingData>? {
         return runWithLock(this.lock) {
             if (!this.teamToFlowMap.containsKey(team)) {
                 LOGGER.info("There is no flow for team {}, createIfNotExist {}", team, createIfNotExist)
@@ -34,24 +34,24 @@ class TeamFlowKeeper {
         }
     }
 
-    suspend fun pushTrack(track: Track) {
-        val flow = this.getTeamFlow(track.team)
+    suspend fun pushTrack(trackingData: TrackingData) {
+        val flow = this.getTeamFlow(trackingData.team)
 
         if (flow == null) {
             LOGGER.info("There are no consumers for team {}, skipping...")
             return
         }
 
-        flow.emit(track)
+        flow.emit(trackingData)
     }
 
 
-    private fun buildTeamFlow(team: String): MutableSharedFlow<Track> {
+    private fun buildTeamFlow(team: String): MutableSharedFlow<TrackingData> {
         LOGGER.info("Creating flow for team {}", team)
 
         var alreadyHadItsFirstSubscriber = false
 
-        val flow = MutableSharedFlow<Track>(0, Int.MAX_VALUE)
+        val flow = MutableSharedFlow<TrackingData>(0, Int.MAX_VALUE)
         flow.subscriptionCount
             .map { count ->
                 LOGGER.info("There are {} listener(s) for team {}", count, team)
@@ -62,7 +62,7 @@ class TeamFlowKeeper {
                 count >= 1
             }.distinctUntilChanged().onEach { isActive ->
                 if (!isActive && alreadyHadItsFirstSubscriber) {
-                    LOGGER.info("There are no active consumers for team {} flow, removing it from team-flow-manager",
+                    LOGGER.info("There are no active consumers for team {} flow, removing it from team-flow-keeper",
                         team)
                     runWithLock(lock) {
                         this.teamToFlowMap.remove(team)
