@@ -34,7 +34,7 @@ class TeamFlowKeeper {
         }
     }
 
-    suspend fun pushTrack(trackingData: TrackingData) {
+    suspend fun pushTrackingData(trackingData: TrackingData) {
         val flow = this.getTeamFlow(trackingData.team)
 
         if (flow == null) {

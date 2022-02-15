@@ -9,14 +9,14 @@ class TrackingDataManager(private val teamFlowKeeper: TeamFlowKeeper, private va
         private val LOGGER = LoggerFactory.getLogger(TrackingDataManager::class.java)
     }
 
-    suspend fun publishNewTrackAcrossInstances(trackingData: TrackingData) = coroutineScope {
+    suspend fun publishNewTrackingDataAcrossInstances(trackingData: TrackingData) = coroutineScope {
         LOGGER.info("Publishing a new tracking-data across the service instances {}", trackingData)
         this@TrackingDataManager.trackingDataPublisher.publish(trackingData)
     }
 
-    suspend fun pushTrackToActiveStream(trackingData: TrackingData) {
+    suspend fun pushTrackingDataToActiveStream(trackingData: TrackingData) {
         LOGGER.info("Pushing tracking-data {}", trackingData)
-        this.teamFlowKeeper.pushTrack(trackingData)
+        this.teamFlowKeeper.pushTrackingData(trackingData)
     }
 
     suspend fun retrieveTeamFlow(teamName: String) = this.teamFlowKeeper.getTeamFlow(teamName)

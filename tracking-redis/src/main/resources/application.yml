@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: tracking-redis-service
+  redis:
+    host: localhost
+    port: 6379
+
+tracking:
+  infrastructure:
+    redis:
+      channel-prefix: TRACKING_
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: false
