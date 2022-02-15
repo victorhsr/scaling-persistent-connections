@@ -1,0 +1,31 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+
+        - id: tracking-redis-service
+          uri: lb://TRACKING-REDIS-SERVICE
+          predicates:
+            - Path=/tracking/redis/**
+          filters:
+            - RewritePath=/tracking/redis/(?<segment>.*), /tracking/$\{segment}
+
+        - id: tracking-kafka-service
+          uri: lb://TRACKING-KAFKA-SERVICE
+          predicates:
+            - Path=/tracking/kafka/**
+          filters:
+            - RewritePath=/tracking/kafka/(?<segment>.*), /tracking/$\{segment}
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
