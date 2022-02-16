@@ -1,12 +1,15 @@
 package io.github.victorhsr.tracking.core.tracking
 
+import io.github.victorhsr.tracking.core.Location
 import io.github.victorhsr.tracking.core.TeamFlowKeeper
+import io.github.victorhsr.tracking.core.TrackingData
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import java.time.LocalDateTime
 
 class TeamFlowKeeperTest {
 
@@ -125,5 +128,15 @@ class TeamFlowKeeperTest {
         assertNull(teamFlowKeeper.getTeamFlow(teamTwo, false))
         assertNull(teamFlowKeeper.getTeamFlow(teamThree, false))
     }
+
+    @Test
+    fun `should not create a new flow instance if we try to push some tracking data and its team has no active listeners`() =
+        runBlocking {
+            val team = "team_one"
+            val teamFlowKeeper = TeamFlowKeeper()
+            teamFlowKeeper.pushTrackingData(TrackingData("some-id", team, Location("0", ""), LocalDateTime.now()))
+
+            assertNull(teamFlowKeeper.getTeamFlow(team, false))
+        }
 
 }

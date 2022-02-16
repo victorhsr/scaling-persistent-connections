@@ -35,10 +35,10 @@ class TeamFlowKeeper {
     }
 
     suspend fun pushTrackingData(trackingData: TrackingData) {
-        val flow = this.getTeamFlow(trackingData.team)
+        val flow = this.getTeamFlow(trackingData.team, false)
 
         if (flow == null) {
-            LOGGER.info("There are no consumers for team {}, skipping...")
+            LOGGER.info("There are no consumers for team {}, skipping...", trackingData.team)
             return
         }
 
