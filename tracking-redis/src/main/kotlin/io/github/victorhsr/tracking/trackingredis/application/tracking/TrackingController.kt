@@ -18,7 +18,7 @@ class TrackingController(private val trackingManager: TrackingDataManager) {
         private val LOGGER = LoggerFactory.getLogger(TrackingController::class.java)
     }
 
-    @GetMapping("/{team}", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    @GetMapping("/{team}", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     suspend fun subscribeToCollectTrackingData(@PathVariable("team") team: String): Flow<TrackingData> {
 
         LOGGER.info("Registering to collect the task stream from team {}", team)
