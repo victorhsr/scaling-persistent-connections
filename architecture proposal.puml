@@ -8,12 +8,12 @@
 
 
 SHOW_PERSON_PORTRAIT()
-LAYOUT_LEFT_RIGHT()
+' LAYOUT_LEFT_RIGHT()
 HIDE_STEREOTYPE()
 
 title Container diagram for a 'real time' tracking service
 
-Person(p_worker, "Worker", "Uses their smartphone with the company's app to get their location tracked while work")
+Person(p_worker, "Worker", "Uses their smartphone with the company's app to get their location tracked while working")
 Person(p_manager, "Manager", "Every manager has a team of workers, and they want to see their team movimentation in 'real time'")
 
 System_Boundary(s_team_tracking_data_system, "Team Tracking System"){
@@ -39,13 +39,16 @@ System_Boundary(s_team_tracking_data_system, "Team Tracking System"){
     Rel(c_tracking_redis_pub_sub_engine, c_tracking_redis_service, "Pushes tracking data to the subscribers", "channel TRACKING_{TEAM_NAME}")
     Rel(c_tracking_redis_service, c_service_discovery, "Registers itself")
 
-    Rel(p_worker, c_edge_service, "Try to create a stream to write tracking data", "SSE")
-    Rel(p_manager, c_edge_service, "Try to create a stream to read tracking data", "SSE")
+    Rel(p_worker, c_edge_service, "Try to establish a stream to write tracking data", "HTTP POST - application/x-ndjson")
+    Rel(p_manager, c_edge_service, "Try to establish a stream to read tracking data", "HTTP GET - text/event-stream (SSE)")
 
     Rel(c_edge_service, c_service_discovery, "Registers itself")
-    Rel(c_edge_service, c_service_discovery, "Retrieve data about the active microservices in the environment in order to route the request to the interested services")
-    Rel(c_edge_service, c_tracking_redis_service, "Redirects connections that wants to create a stream to read/write tracking data in tracking-redis boundary", "path /tracking/redis - SSE")
-    Rel(c_edge_service, c_tracking_kafka_service, "Redirects connections that wants to create a stream to read/write tracking data in tracking-kafka boundary", "path /tracking/kafka - SSE")
+    Rel(c_edge_service, c_service_discovery, "Retrieve data about active microservices in the environment in order to route the request to the interested services")
+    Rel(c_edge_service, c_tracking_redis_service, "Redirects connections that want to establish a stream to read tracking data in tracking-redis boundary", "HTTP GET /tracking/redis/{team_name} - text/event-stream (SSE)")
+    Rel(c_edge_service, c_tracking_redis_service, "Redirects connections that want to establish a stream to write tracking data in tracking-redis boundary", "HTTP POST /tracking/redis - application/x-ndjson")
+
+    Rel(c_edge_service, c_tracking_kafka_service, "Redirects connections that want to establish a stream to read tracking data in tracking-kafka boundary", "HTTP GET /tracking/kafka/{team_name} - text/event-stream (SSE)")
+    Rel(c_edge_service, c_tracking_kafka_service, "Redirects connections that want to establish a stream to write tracking data in tracking-kafka boundary", "HTTP POST /tracking/kafka - application/x-ndjson")
 
     Rel(c_tracking_kafka_service, c_tracking_kafka_broker, "Publishes tracking data from worker's connection", "topic TRACKING_{team_name}")
     Rel(c_tracking_kafka_service, c_tracking_kafka_broker, "Consumes tracking data from the broker", "topic pattern TRACKING_*")
