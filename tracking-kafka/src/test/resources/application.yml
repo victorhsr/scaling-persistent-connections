@@ -1,0 +1,8 @@
+tracking:
+  infrastructure:
+    kafka:
+      topic-prefix: TRACKING_
+
+eureka:
+  client:
+    enabled: false

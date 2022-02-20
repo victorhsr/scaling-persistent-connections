@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: tracking-kafka-service
+
+tracking:
+  infrastructure:
+    kafka:
+      topic-prefix: TRACKING_
+
+kafka:
+  bootstrap-servers: "localhost:9999"
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: false
