@@ -134,7 +134,11 @@ class TeamFlowKeeperTest {
         runBlocking {
             val team = "team_one"
             val teamFlowKeeper = TeamFlowKeeper()
-            teamFlowKeeper.pushTrackingData(TrackingData("some-id", team, Location("0", ""), LocalDateTime.now()))
+            teamFlowKeeper.pushTrackingData(TrackingData("some-id",
+                "some-worker-id",
+                team,
+                Location("0", ""),
+                LocalDateTime.now()))
 
             assertNull(teamFlowKeeper.getTeamFlow(team, false))
         }
