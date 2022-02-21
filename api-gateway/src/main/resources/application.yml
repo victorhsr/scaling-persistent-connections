@@ -16,15 +16,23 @@ spring:
           predicates:
             - Path=/tracking/redis/**
           filters:
-            - RewritePath=/tracking/redis/(?<segment>.*), /tracking/$\{segment}
+            - RewritePath=/tracking/redis/(?<segment>/?.*), /tracking/$\{segment}
 
         - id: tracking-kafka-service
           uri: lb://TRACKING-KAFKA-SERVICE
           predicates:
             - Path=/tracking/kafka/**
           filters:
-            - RewritePath=/tracking/kafka/(?<segment>.*), /tracking/$\{segment}
+            - RewritePath=/tracking/kafka/(?<segment>/?.*), /tracking/$\{segment}
 
+      globalCors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+            - GET
+            - POST
+            - PATCH
 eureka:
   client:
     registerWithEureka: true

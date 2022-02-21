@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.http.codec.ServerCodecConfigurer
 import org.springframework.http.codec.json.Jackson2JsonDecoder
 import org.springframework.http.codec.json.Jackson2JsonEncoder
-import org.springframework.web.reactive.config.CorsRegistry
 import org.springframework.web.reactive.config.EnableWebFlux
 import org.springframework.web.reactive.config.WebFluxConfigurer
 
@@ -24,13 +23,6 @@ fun main(args: Array<String>) {
 @Configuration
 @EnableWebFlux
 class CustomWebFluxConfigurer : WebFluxConfigurer {
-
-    override fun addCorsMappings(corsRegistry: CorsRegistry) {
-        corsRegistry.addMapping("/**")
-            .allowedOrigins("*")
-            .allowedMethods("GET", "POST", "PATCH")
-            .maxAge(3600)
-    }
 
     override fun configureHttpMessageCodecs(configurer: ServerCodecConfigurer) {
         val systemObjectMapper = getSystemObjectMapper()
