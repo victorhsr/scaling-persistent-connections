@@ -1,0 +1,94 @@
+version: '3.2'
+
+services:
+
+  api-gateway:
+    build: ./api-gateway
+    image: victorhsr/api-gateway
+    depends_on:
+      - service-discovery
+    ports:
+      - 8080:8080
+    networks:
+      - tracking
+    environment:
+      - eureka.client.service-url.defaultZone=http://service-discovery:8080/eureka
+
+  service-discovery:
+    build: ./service-discovery
+    image: victorhsr/service-discovery
+    networks:
+      - tracking
+    environment:
+      - eureka.client.service-url.defaultZone=http://service-discovery:8080/eureka
+
+  redis:
+    image: redis:latest
+    networks:
+      - redis
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - kafka
+
+  kafka:
+    image: wurstmeister/kafka:latest
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_CREATE_TOPICS: "TRACKING_team_two:1:1"
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+    networks:
+      - kafka
+
+  tracking-redis-service:
+    build: 
+      context: ./
+      dockerfile: ./tracking-redis/Dockerfile
+    image: victorhsr/tracking-redis
+    depends_on:
+      - service-discovery
+      - redis
+    networks:
+      - tracking
+      - redis
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      - eureka.client.service-url.defaultZone=http://service-discovery:8080/eureka
+      - spring.redis.host=redis
+      - spring.redis.port=6379
+
+  tracking-kafka-service:
+    build:
+      context: ./
+      dockerfile: ./tracking-kafka/Dockerfile
+    image: victorhsr/tracking-kafka
+    depends_on:
+      - service-discovery
+      - kafka
+    networks:
+      - tracking
+      - kafka
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      - eureka.client.service-url.defaultZone=http://service-discovery:8080/eureka
+      - kafka.bootstrap-servers=kafka:9092
+    
+networks:
+  tracking:
+    name: tracking
+  kafka:
+    name: kafka
+  redis:
+    name: redis
