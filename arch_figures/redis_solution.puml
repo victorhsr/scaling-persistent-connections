@@ -1,0 +1,45 @@
+@startuml Team Tracking System
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+!define SPRITESURL https://raw.githubusercontent.com/rabelenda/cicon-plantuml-sprites/v1.0/sprites
+!include DEVICONS/spring.puml
+!include DEVICONS/redis.puml
+
+
+SHOW_PERSON_PORTRAIT()
+LAYOUT_LEFT_RIGHT()
+HIDE_STEREOTYPE()
+
+title Container diagram for a 'real time' tracking service
+
+Person(p_worker, "Worker", "Uses their smartphone with the company's app to get their location tracked while working")
+Person(p_manager, "Manager", "Every manager has a team of workers, and they want to see their team movimentation in 'real time'")
+
+System_Boundary(s_team_tracking_data_system, "Team Tracking System"){
+
+    Boundary(b_tracking_redis_boundary, "Tracking Redis"){
+        Container(c_tracking_redis_service, "Tracking Redis Service", "Kotlin / Spring", "The service that will push the information about the location of the workers of a team", $sprite="spring")
+        ContainerDb(c_tracking_redis_pub_sub_engine, "PUB / SUB", "Redis", "Act as a PUB / SUB engine that allow us to scale up the Tracking Service, distributing the incoming messages through all listener nodes", $sprite="redis")
+    }
+
+    Boundary(b_edge_service, "Edge Service"){
+        Container(c_edge_service, "API Gateway", "Kotlin / Spring", "An edge service, the only service that can be reached by the external world, it will provide a well-defined API to it's users, and route the traffic to the desired services", $sprite="spring")
+        Container(c_service_discovery, "Service discovery", "Kotlin / Spring", "The service discovery which all of the microservices will subscribe to in order to give us a way to keep track about the active instances in our microsservices environment", $sprite="spring")
+    }
+
+    Rel(c_tracking_redis_service, c_tracking_redis_pub_sub_engine, "Subscribes to get notified when a new data tracking arrives in the system", "channel pattern TRACKING_*")
+    Rel(c_tracking_redis_service, c_tracking_redis_pub_sub_engine, "Publishes tracking data from worker's connection", "channel TRACKING_{team_name}")
+    Rel(c_tracking_redis_service, c_tracking_redis_service, "Pushes tracking data from redis, to active reading streams", "SSE")
+    Rel(c_tracking_redis_pub_sub_engine, c_tracking_redis_service, "Pushes tracking data to the subscribers", "channel TRACKING_{TEAM_NAME}")
+    Rel(c_tracking_redis_service, c_service_discovery, "Registers itself")
+
+    Rel(p_worker, c_edge_service, "Try to establish a stream to write tracking data", "HTTP POST - application/x-ndjson")
+    Rel(p_manager, c_edge_service, "Try to establish a stream to read tracking data", "HTTP GET - text/event-stream (SSE)")
+
+    Rel(c_edge_service, c_service_discovery, "Registers itself")
+    Rel(c_edge_service, c_service_discovery, "Retrieve data about active microservices in the environment in order to route the request to the interested services")
+    Rel(c_edge_service, c_tracking_redis_service, "Redirects connections that want to establish a stream to read tracking data in tracking-redis boundary", "HTTP GET /tracking/redis/{team_name} - text/event-stream (SSE)")
+    Rel(c_edge_service, c_tracking_redis_service, "Redirects connections that want to establish a stream to write tracking data in tracking-redis boundary", "HTTP POST /tracking/redis - application/x-ndjson")
+}
+
+@enduml

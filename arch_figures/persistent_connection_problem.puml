@@ -1,0 +1,24 @@
+@startuml persistent_connection_problem
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+
+SHOW_PERSON_PORTRAIT()
+LAYOUT_LEFT_RIGHT()
+HIDE_STEREOTYPE()
+
+Person(p_worker_1, "Worker", "From team one")
+Person(p_worker_2, "Worker", "From team one")
+Person(p_worker_3, "Worker", "From team two")
+
+Person(p_manager, "Manager", "From team one")
+
+Container(c_some_system_instance_1, "Foo Service instance 1", "any language / any framework")
+Container(c_some_system_instance_2, "Foo Service instance 2", "any language / any framework")
+
+Rel(p_worker_1, c_some_system_instance_1, "Send tracking data")
+Rel(p_worker_3, c_some_system_instance_1, "Send tracking data")
+Rel(p_worker_2, c_some_system_instance_2, "Send tracking data")
+
+Rel(c_some_system_instance_2, p_manager, "Push new tracking data to manager's reading stream")
+
+@enduml
