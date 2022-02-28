@@ -14,7 +14,7 @@ When we have more than one instance of the service that will handle with the per
 
 Both solutions presented bellow are pretty similar, both broadcast the tracking data between all of the instances, so it doesn't matter if the Manager's connections is in a different instance than the Worker's ones.
 
-This is a solution that works, to a certain extent, but it still have some tradeoffs and bottlenecks that we have discussed in the article. So, this is like a partial solution, we still are going to improve this architecture to a most robust one in the chapter two of this article, stay tuned!
+This is a solution that works, to a certain extent, but it still have some tradeoffs and bottlenecks that we have discussed in the article. So, this is like a partial solution, we're still going to improve this architecture to a most robust one in the chapter two of this article, stay tuned!
 
 ### Redis
 
