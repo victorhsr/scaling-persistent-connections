@@ -41,6 +41,18 @@ This project has a `docker-compose` file so you can just run it `docker-compose 
 
 You'll be able to acess the **team-tracking-view** hitting `http://localhost:3000`
 
+### Simulating teams
+
+You can simulate working teams, by running the **team-simulator** project (`npm start` on it's root folder). By default, to save resources, there are only 80 workers for `team_one` on the kafka project, with a delay of 550 between the generated data by a worker. And there is 95 workers for `team_two` on the redis project, with also, a delay of 550 between the generated data by a worker.
+
+You'll be able to alter these values, based on your available resources by changing the following environment variables:
+
+```
+KAFKA_WORKERS and REDIS_WORKERS, both refer to the number of workers for `team_one` and `team_two`
+
+KAFKA_UPDATE_DELAY and KAFKA_UPDATE_DELAY, both refer to the delay between the generated data
+```
+
 ## Notice
 
 This project runs a lot of containers, and in order to prevent your system from running out of resources, the number of replicas for **tracking-redis** and **tracking-kafka** was reduced to one. So, in order to achieve the actual result of this project, change this value to something `>= 2` (in it's docker-copose file) according to your available resources.
