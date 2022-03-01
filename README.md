@@ -24,3 +24,23 @@ This is a solution that works, to a certain extent, but it still have some trade
 ### Kafka
 
 ![Architectural proposal for the redis solution](./arch_figures/kafka_solution.png)
+
+## Project structure
+
+* **api-gateway** - edge service for both solutions, it'll route all the requests to kafka and redis solutions;
+* **service-discovery** - keeps track of all active microservice instances in the environment;
+* **tracking-core** - the core solution of the given problem, this module is used by both scalling strategies;
+* **tracking-kafka** - the kafka implementation to scale the application;
+* **tracking-redis** - the redis implementation to scale the application;
+* **team-simulator** - a Node.js application used to simulate Worker users, we can create teams and simulate the movimentation of its members for both projects, tracking-redis and tracking-kafka;
+* **team-tracking-view** - a view application, we will be able to see in action the pretending data created by the **team-simulator** project;
+
+## Running
+
+This project has a `docker-compose` file so you can just run it `docker-compose up`. It will create all the needed containers.
+
+You'll be able to acess the **team-tracking-view** hitting `http://localhost:3000`
+
+## Notice
+
+This project runs a lot of containers, and in order to prevent your system from running out of resources, the number of replicas for **tracking-redis** and **tracking-kafka** was reduced to one. So, in order to achieve the actual result of this project, change this value to something `>= 2` (in it's docker-copose file) according to your available resources.
