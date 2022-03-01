@@ -8,7 +8,7 @@ To solve this problem, we are goingo to rely on persistent connections, creating
 
 When we have more than one instance of the service that will handle with the persistent connections, one of the intentions is to split the work load between the instances, thus, each instance will keep part of the connections from both, Workers and Managers. If the reading stream, from the Manager users, may not be in the same service that holds the Woker's connection, how will it be able to receive the tracking data from their entire team?
 
-![Representation of the work splitting between the service instances](./arch_figures/persistent_connection_problem.png)
+![Representation of the work splitting between the service instances](./images/persistent_connection_problem.png)
 
 ## Solutions
 
@@ -18,12 +18,12 @@ This is a solution that works, to a certain extent, but it still have some trade
 
 ### Redis
 
-![Architectural proposal for the redis solution](./arch_figures/redis_solution.png)
+![Architectural proposal for the redis solution](./images/redis_solution.png)
 
 
 ### Kafka
 
-![Architectural proposal for the redis solution](./arch_figures/kafka_solution.png)
+![Architectural proposal for the redis solution](./images/kafka_solution.png)
 
 ## Project structure
 
