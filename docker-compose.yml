@@ -61,7 +61,7 @@ services:
       - redis
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 1 # change me
     environment:
       - eureka.client.service-url.defaultZone=http://service-discovery:8080/eureka
       - spring.redis.host=redis
@@ -80,7 +80,7 @@ services:
       - kafka
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 1 # change me
     environment:
       - eureka.client.service-url.defaultZone=http://service-discovery:8080/eureka
       - kafka.bootstrap-servers=kafka:9092
