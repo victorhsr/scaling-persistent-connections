@@ -50,11 +50,11 @@ You can simulate working teams, by running the **team-simulator** project (`npm 
 You'll be able to alter these values, based on your available resources by changing the following environment variables:
 
 ```
-KAFKA_WORKERS and REDIS_WORKERS, both refer to the number of workers for `team_one` and `team_two`
+REDIS_WORKERS and KAFKA_WORKERS, both refer to the number of workers for `team_one` and `team_two`
 
-KAFKA_UPDATE_DELAY and KAFKA_UPDATE_DELAY, both refer to the delay between the generated data
+REDIS_UPDATE_DELAY and KAFKA_UPDATE_DELAY, both refer to the delay between the generated data
 ```
 
 ## Notice
 
-This project runs a lot of containers, and in order to prevent your system from running out of resources, the number of replicas for **tracking-redis** and **tracking-kafka** was reduced to one. So, in order to achieve the actual result of this project, change this value to something `>= 2` (in it's docker-copose file) according to your available resources.
+This project runs a lot of containers, and in order to prevent your system from running out of resources, the number of replicas of **tracking-redis** and **tracking-kafka** was reduced to one. So, to achieve the actual result of this project, change this value to something `>= 2` (in it's docker-copose file) according to your available resources.
