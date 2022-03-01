@@ -1,16 +1,26 @@
 const Worker = require("./worker");
 
-const kafkaWorkers = [...Array(80)].map((_, index) => {
-  const worker = new Worker("team_two", "kafka", "550");
-  worker.startWorking();
-  return worker;
-});
+const redisTeam = "team_one";
+const kafkaTeam = "team_two";
 
-const redisWorkers = [...Array(95)].map((_, index) => {
-  const worker = new Worker("team_one", "redis", "550");
+const kafkaTotalWorkers = process.env.KAFKA_WORKERS || 80
+const kafkaUpdateDelay = process.env.KAFKA_UPDATE_DELAY || 550
+
+const redisTotalWorkers = process.env.REDIS_WORKERS || 95
+const redisUpdateDelay = process.env.REDIS_UPDATE_DELAY || 550
+
+function createWorker(team, strategy, updateDelay) {
+  const worker = new Worker(team, strategy, updateDelay);
   worker.startWorking();
   return worker;
-});
+}
+
+console.log("Creating", kafkaTotalWorkers, "worker(s) for kafka, team:", kafkaTeam);
+const kafkaWorkers = [...Array(kafkaTotalWorkers)].map((_) => createWorker(kafkaTeam, "kafka", kafkaUpdateDelay));
+console.log("Creating", redisTotalWorkers, "worker(s) for redis, team:", redisTeam);
+const redisWorkers = [...Array(redisTotalWorkers)].map((_) => createWorker(redisTeam, "redis", redisUpdateDelay));
+
+console.log("Worker(s) created and sending tracking data");
 
 function exitHandler(cause) {
   console.log("Releasing connections, cause:", cause);
