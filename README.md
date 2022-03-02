@@ -6,9 +6,9 @@ This repo was made to support an article I'm writing (link will be added soon) a
 
 There is a system where there are teams of workers and each team has a manager who wants to see in 'real time', the location of their workers on a map. The refreshing rate of the worker's position must be as short as possible and the system must be able to handle thousands of workers sending tracking data at the same time. There's also another characteristic, the number of workers online is seasonal, it means, there are periods of time where the number of active workers may spike aggressively or be reduced by half of its usual.
 
-To solve this problem, we are goingo to rely on persistent connections, creating data streams betwen the actors of the system (futher information and full discussion about the problem, you can find on the article). But, what is the issue about scalling up services that rely on persistent connections?
+To solve this problem, we are goingo to rely on persistent connections, creating data streams between the actors of the system (futher information and full discussion about the problem, you can find on the article). But, what is the issue about scalling up services that rely on persistent connections?
 
-When we have more than one instance of the service that will handle with the persistent connections, one of the intentions is to split the work load between the instances, thus, each instance will keep part of the connections from both, Workers and Managers. If the reading stream, from the Manager users, may not be in the same service that holds the Woker's connection, how will it be able to receive the tracking data from their entire team?
+When we have more than one instance of the service that will handle with the persistent connections, one of the intentions is to split the work load between the instances, thus, each instance will keep part of the connections from both, Workers and Managers. If the reading stream, from the Manager users, may not be in the same service that holds the Worker's connection, how will it be able to receive the tracking data from their entire team?
 
 ![Representation of the work splitting between the service instances](./images/persistent_connection_problem.png)
 
@@ -45,7 +45,7 @@ You'll be able to acess the **team-tracking-view** hitting `http://localhost:300
 
 ### Simulating teams
 
-You can simulate working teams, by running the **team-simulator** project (`npm start` on it's root folder). By default, to save resources, there are only 80 workers for `team_one` on the kafka project, with a delay of 550 between the generated data by a worker. And there is 95 workers for `team_two` on the redis project, with also, a delay of 550 between the generated data by a worker.
+You can simulate working teams, by running the **team-simulator** project (`npm start` on it's root folder). By default, to save resources, there are only 95 workers for `team_one` on the redis project, with a delay of 550 between the generated data by a worker. And there is 80 workers for `team_two` on the kafka project, with also, a delay of 550 between the generated data by a worker.
 
 You'll be able to alter these values, based on your available resources by changing the following environment variables:
 
