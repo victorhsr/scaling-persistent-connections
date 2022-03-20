@@ -1,4 +1,4 @@
-This repo was made to support an article I'm writing (link will be added soon) about how we can scale up applications that rely on persistent connections, based in a real world scenario I faced some years ago.
+This repo was made to support an [article](https://www.linkedin.com/feed/update/urn:li:ugcPost:6909227700805087232?updateEntityUrn=urn%3Ali%3Afs_updateV2%3A%28urn%3Ali%3AugcPost%3A6909227700805087232%2CFEED_DETAIL%2CEMPTY%2CDEFAULT%2Cfalse%29) I wrote about how we can scale up applications that rely on persistent connections, based in a real world scenario I faced some years ago.
 
 ![Representation of how the team-tracking-view project works](./images/team-tracking-view-demo.gif)
 
@@ -57,4 +57,4 @@ REDIS_UPDATE_DELAY and KAFKA_UPDATE_DELAY, both refer to the delay between the g
 
 ## Notice
 
-This project runs a lot of containers, and in order to prevent your system from running out of resources, the number of replicas of **tracking-redis** and **tracking-kafka** was reduced to one. So, to achieve the actual result of this project, change this value to something `>= 2` (in it's docker-copose file) according to your available resources.
+This project runs a lot of containers, and in order to prevent your system from running out of resources, the number of replicas of **tracking-redis** and **tracking-kafka** was reduced to one. So, to achieve the actual result of this project, change this value to something `>= 2` (in the projects docker-copose file) according to your available resources.
